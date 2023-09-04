@@ -68,6 +68,32 @@
       <version>3.8.1</version>
       <scope>test</scope>
     </dependency>
+
+    <dependency>
+			<groupId>com.google.code.gson</groupId>
+			<artifactId>gson</artifactId>
+			<version>2.10.1</version>
+		</dependency>
+
+    <!--Java-Python Dependencies-->
+    <dependency>
+        <groupId>org.apache.arrow</groupId>
+        <artifactId>arrow-memory</artifactId>
+        <version>${arrow.version}</version>
+        <type>pom</type>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.arrow</groupId>
+      <artifactId>arrow-vector</artifactId>
+      <version>${arrow.version}</version>
+      <type>pom</type>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.arrow</groupId>
+      <artifactId>arrow-c-data</artifactId>
+      <version>${arrow.version}</version>
+      <type>jar</type>
+    </dependency>
   </dependencies>
 
   <build>
