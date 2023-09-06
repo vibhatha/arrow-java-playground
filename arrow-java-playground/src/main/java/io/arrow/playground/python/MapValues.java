@@ -12,7 +12,14 @@ import org.apache.arrow.vector.dictionary.Dictionary;
 import org.apache.arrow.vector.dictionary.DictionaryEncoder;
 import org.apache.arrow.vector.types.pojo.ArrowType;
 import org.apache.arrow.vector.types.pojo.DictionaryEncoding;
+import org.apache.arrow.vector.util.TransferPair;
+
 import java.nio.charset.StandardCharsets;
+import org.apache.arrow.vector.compare.VectorEqualsVisitor;
+
+import org.apache.arrow.vector.NullVector;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.apache.arrow.vector.util.TransferPair;
 
 
 public class MapValues {
@@ -66,10 +73,17 @@ public class MapValues {
         ArrowArray arrow_array = ArrowArray.wrap(c_array_ptr);
         ArrowSchema arrow_schema = ArrowSchema.wrap(c_schema_ptr);
 
-        FieldVector v = Data.importVector(allocator, arrow_array, arrow_schema, null);
-        FieldVector u = this.countriesDictionary.getVector();
-        
-        return v.getValueCount() == u.getValueCount();
+        FieldVector imported = Data.importVector(allocator, arrow_array, arrow_schema, null);
+        FieldVector vector = this.countriesDictionary.getVector();
+
+        if (!(imported instanceof NullVector)) {
+            assertEquals(allocator, imported.getAllocator());
+        }
+        System.out.println("imported >>> " + imported);
+        System.out.println("this >>> " + vector);
+        System.out.println(imported.getMinorType() + ", " + vector.getMinorType());
+
+        return VectorEqualsVisitor.vectorEquals(imported, vector);
     }
     
 }

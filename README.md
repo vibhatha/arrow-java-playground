@@ -29,3 +29,11 @@ java -Darrow.memory.debug.allocator=true -cp target/arrow-java-playground-1.0-SN
 ```bash
 java -Darrow.memory.debug.allocator=true -cp target/arrow-java-playground-1.0-SNAPSHOT.jar io.arrow.playground.MemoryApp --mode leak
 ```
+
+## Java-Python Roundtripping
+
+### Dictionary Data
+
+`MapValuesV2.java` and `map_values_v2.py` are the relevant interfaces. 
+
+To see it in action, first build the project `mvn clean install` and then `cd java-python`. `python map_values_v2.py`

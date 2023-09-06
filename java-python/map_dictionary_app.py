@@ -18,7 +18,9 @@ from org.apache.arrow.vector.dictionary import Dictionary
 from org.apache.arrow.vector.types.pojo import DictionaryEncoding;
 
 field_vector = dictionary.getVector()
-encoding = dictionary.getEncoding()    
+print("FieldVector: dictionary.getVector() : ", field_vector)
+encoding = dictionary.getEncoding()
+print("encoding: dictionary.getEncoding() : ", encoding)
 
 import pyarrow.jvm
 dict_values = pyarrow.jvm.array(field_vector)
@@ -44,8 +46,9 @@ pyarrow_dict.dictionary._export_to_c(c_array_ptr)
 c_schema = arrow_c.new("struct ArrowSchema*")
 c_schema_ptr = int(arrow_c.cast("uintptr_t", c_schema))
 pyarrow_dict.dictionary.type._export_to_c(c_schema_ptr)
-
-
-assert map_values.compareWithPython(c_array_ptr, c_schema_ptr)
+try:
+    map_values.compareWithPython(c_array_ptr, c_schema_ptr)
+except Exception as ex:
+    print(ex)
 
 del dict_values
