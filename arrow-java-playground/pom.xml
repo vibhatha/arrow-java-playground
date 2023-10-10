@@ -15,7 +15,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.target>1.8</maven.compiler.target>
-    <arrow.version>9.0.0</arrow.version>
+    <arrow.version>13.0.0</arrow.version>
   </properties>
 
 
@@ -32,14 +32,26 @@
     </dependency>
     <dependency>
       <groupId>org.apache.arrow</groupId>
-      <artifactId>arrow-memory-unsafe</artifactId>
+      <artifactId>arrow-memory-netty</artifactId>
       <version>${arrow.version}</version>
     </dependency>
     <dependency>
       <groupId>org.apache.arrow</groupId>
-      <artifactId>arrow-memory-netty</artifactId>
+      <artifactId>arrow-compression</artifactId>
       <version>${arrow.version}</version>
     </dependency>
+    <!-- https://mvnrepository.com/artifact/org.apache.arrow/arrow-compression -->
+  <dependency>
+    <groupId>org.apache.arrow</groupId>
+    <artifactId>arrow-compression</artifactId>
+    <version>13.0.0</version>
+  </dependency>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-compress</artifactId>
+      <version>1.21</version>
+    </dependency>
+
 
     <!-- SLF4J API -->
     <dependency>
@@ -135,11 +147,103 @@
                 <mainClass>io.arrow.playground.HelloArrowJava</mainClass>
               </transformer>
             </transformers>
+            <argLine>--add-opens=java.base/java.nio=ALL-UNNAMED</argLine>
           </configuration>
         </execution>
       </executions>
     </plugin>
 
+
+    <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.8.1</version>
+        <configuration>
+          <release>11</release> <!-- or your JDK version -->
+        </configuration>
+        <executions>
+          <execution>
+            <id>generate-native-headers</id>
+            <goals>
+              <goal>compile</goal>
+            </goals>
+            <phase>generate-sources</phase>
+            <configuration>
+              <compilerArgs>
+                <arg>-h</arg>
+                <arg>${project.basedir}/src/main/cpp</arg>
+              </compilerArgs>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <!-- Your native-maven-plugin without the javah goal -->
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>native-maven-plugin</artifactId>
+        <version>1.0-alpha-9</version>
+        <executions>
+          <execution>
+            <id>javah</id>
+            <phase>compile</phase>
+            <goals>
+              <goal>initialize</goal>
+              <goal>compile</goal>
+              <goal>link</goal>
+            </goals>
+          </execution>
+        </executions>
+        <!-- ... existing configuration ... -->
+        <configuration>
+          <javahOS>linux</javahOS>
+          <compilerStartOptions>
+            <compilerStartOption>-I/home/asus/software/jdk-11.0.1/include</compilerStartOption>
+            <compilerStartOption>-I/home/asus/software/jdk-11.0.1/include/linux</compilerStartOption>
+            <compilerStartOption>-I/home/asus/mambaforge/envs/pyarrow-dev/include</compilerStartOption>
+            <compilerStartOption>-fPIC</compilerStartOption>
+          </compilerStartOptions>
+          <javahProvider>default</javahProvider>
+          <javahOutputDirectory>${project.basedir}/src/main/cpp</javahOutputDirectory>
+          <javahOutputFileNames>
+            <javahOutputFileName>io_arrow_playground_cpp_NativeExample.h</javahOutputFileName>
+            <javahOutputFileName>io_arrow_playground_cpp_MapValues.h</javahOutputFileName>
+          </javahOutputFileNames>
+          <javahClassNames>
+            <javahClassName>io.arrow.playground.cpp.NativeExample</javahClassName>
+            <javahClassName>io.arrow.playground.cpp.MapValues</javahClassName>
+          </javahClassNames>
+          <compilerProvider>generic-classic</compilerProvider>
+          <compilerExecutable>gcc</compilerExecutable>
+          <sources>
+            <source>
+              <directory>${project.basedir}/src/main/cpp</directory>
+              <fileNames>
+                <fileName>NativeExample.cpp</fileName>
+                <fileName>MapValues.cpp</fileName>
+              </fileNames>
+            </source>
+          </sources>
+          <link>
+            <option>-shared</option>
+          </link>
+          <linkerOutputDirectory>target</linkerOutputDirectory>
+          <linkerExecutable>gcc</linkerExecutable>
+          <!-- linker options -->
+          <linkerStartOptions>
+            <linkerStartOption>-m64</linkerStartOption>
+            <linkerStartOption>-shared</linkerStartOption>
+            <linkerStartOption>-L/home/asus/mambaforge/envs/pyarrow-dev/lib</linkerStartOption>
+            <linkerStartOption>-larrow</linkerStartOption>
+          </linkerStartOptions>
+          <linkerEndOptions>
+            <linkerEndOption>
+              -o ${project.build.directory}/libArrowCpp.so
+            </linkerEndOption>
+            <linkerStartOption>-lstdc++</linkerStartOption>
+          </linkerEndOptions>
+        </configuration>
+      </plugin>
   </plugins>
 </build>
 

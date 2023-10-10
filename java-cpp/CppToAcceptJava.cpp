@@ -26,7 +26,7 @@ int main() {
     JavaVM *jvm;
     env = CreateVM(&jvm);
     if (env == nullptr) return EXIT_FAILURE;
-    jclass javaClassToBeCalledByCpp = env->FindClass("io.arrow.playground.cpp.ToBeCalledByCpp");
+    jclass javaClassToBeCalledByCpp = env->FindClass("io/arrow/playground/cpp/ToBeCalledByCpp");
     if (javaClassToBeCalledByCpp != nullptr) {
         jmethodID fillVector = env->GetStaticMethodID(javaClassToBeCalledByCpp,
                                                       "fillVector",

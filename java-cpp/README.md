@@ -62,3 +62,16 @@ Output
 ```bash
 Hello
 ```
+
+## Dictionary Data Handling
+
+```bash
+javac -cp ~/.m2/repository/org/bytedeco/javacpp/1.5.7/javacpp-1.5.7.jar CDataDictionaryJavaConfig.java
+java -jar ~/.m2/repository/org/bytedeco/javacpp/1.5.7/javacpp-1.5.7.jar CDataDictionaryJavaConfig.java
+java -jar ~/.m2/repository/org/bytedeco/javacpp/1.5.7/javacpp-1.5.7.jar CDataDictionaryJavaToCppExample.java
+```
+
+```bash
+javac -cp ".:../arrow-java-playground/target/arrow-java-playground-1.0-SNAPSHOT.jar" CDataDictionaryInterface.java
+java -cp ".:../arrow-java-playground/target/arrow-java-playground-1.0-SNAPSHOT.jar" CDataDictionaryInterface
+```
